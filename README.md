@@ -32,3 +32,14 @@ private broadcast(event, client, message: any) {
   }
 ```
 
+**사용자에게 메세지 전송**
+- ``send``를 감지했을 때 다른 사용자에게 메세지를 전송합니다.
+```ts
+  @SubscribeMessage('send')
+  sendMessage(@MessageBody() data: string, @ConnectedSocket() client) {
+    const [room, nickname, message] = data;
+    console.log(`${client.id} : ${data}`);
+    this.broadcast(room, client, [nickname, message]);
+  }
+}
+```
