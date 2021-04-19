@@ -35,6 +35,10 @@
         socket.on('comeOn' + room, (comeOn) => {
           $('#chatList').append(`<div style="color:blue;">${comeOn}</div>`);
         });
+
+        socket.on('test', (data) => {
+          console.log(data)
+        });
       });
 
       function msg_send() {

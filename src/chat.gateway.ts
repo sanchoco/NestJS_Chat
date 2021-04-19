@@ -5,17 +5,29 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Client, Server } from 'socket.io';
 
 
 @WebSocketGateway(81, { namespace: 'chat' })
 export class ChatGateway {
   @WebSocketServer()
-  server;
+  server: Server;
 
   wsClients = [];
 
+  handleConnection(client: Client) {
+
+  }
+
+  handleDisconnect(client: Client) {
+
+  }
+
   @SubscribeMessage('hihi')
-  connectSomeone(@MessageBody() data: string, @ConnectedSocket() client) {
+  connectSomeone(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Client,
+  ) {
     const [nickname, room] = data;
     console.log(`${nickname}님이 코드: ${room}방에 접속했습니다.`);
     const comeOn = `${nickname}님이 입장했습니다.`;
@@ -25,8 +37,7 @@ export class ChatGateway {
 
   private broadcast(event, client, message: any) {
     for (let c of this.wsClients) {
-      if (client.id == c.id)
-        continue;
+      if (client.id == c.id) continue;
       c.emit(event, message);
     }
   }
