@@ -7,21 +7,14 @@ import {
 } from '@nestjs/websockets';
 import { Client, Server } from 'socket.io';
 
-
 @WebSocketGateway(81, { namespace: 'chat' })
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
-  wsClients = [];
+  handleConnection(client: Client) {}
 
-  handleConnection(client: Client) {
-
-  }
-
-  handleDisconnect(client: Client) {
-
-  }
+  handleDisconnect(client: Client) {}
 
   @SubscribeMessage('hihi')
   connectSomeone(
@@ -32,14 +25,11 @@ export class ChatGateway {
     console.log(`${nickname}님이 코드: ${room}방에 접속했습니다.`);
     const comeOn = `${nickname}님이 입장했습니다.`;
     this.server.emit('comeOn' + room, comeOn);
-    this.wsClients.push(client);
   }
 
   private broadcast(event, client, message: any) {
-    for (let c of this.wsClients) {
-      if (client.id == c.id) continue;
-      c.emit(event, message);
-    }
+    for (let id in this.server.sockets)
+      if (id !== client.id) this.server.sockets[id].emit(event, message);
   }
 
   @SubscribeMessage('send')
